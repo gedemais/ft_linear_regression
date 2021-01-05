@@ -10,7 +10,7 @@ while keep:
 
         if s == "q":
             print("Goodbye !")
-            break
+            exit(0)
 
         mileage = int(s)
 
@@ -33,3 +33,8 @@ try:
     t1 = float(theta_1)
 except:
     print("THETA_ZERO/THETA_ONE environnement variables content is not valid !", file=stderr)
+    exit(1)
+
+result = t0 + (t1 * mileage)
+
+print(str(result) + '€')
