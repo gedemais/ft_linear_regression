@@ -1,28 +1,35 @@
 import pandas as pd
+import os
 
-learning_rate = 0.001
+learning_rate = 0.0001
 
 data_frame = pd.read_csv('data.csv', delimiter=',')
 
-def estimator(t0, t1, mileage):
-    return t0 + (t1 * mileage)
+def estimator(t0, t1, mileages):
+    return t0 + (t1 * mileages)
 
-
-def trainer(mileages, prices, t0, t1):
-    tmp0 = 0
-    tmp1 = 0
-
-    length = len(mileages)
-
-    rate = learning_rate * (1.0 / float(length)) # ca on peut le faire qu'une fois
-
-    print(rate)
+def sumTheta0(t0, t1, mileages, prices, length):
+    val = 0
     for i in range(length):
-        tmp0 += estimator(t0, t1, mileages[i]) - prices[i]
-        tmp1 += (estimator(t0, t1, mileages[i]) - prices[i]) * mileages[i]
+        val += estimator(t0, t1, mileages[i]) - prices[i]
+    return val
 
-    t0 += rate * (tmp0 / length)
-    t1 += rate * (tmp1 / length)
+def sumTheta1(t0, t1, mileages, prices, length):
+    val = 0
+    for i in range(length):
+        val += (estimator(t0, t1, mileages[i]) - prices[i]) * mileages[i]
+    return val
+
+def trainer(mileages, prices, i):
+    t0 = 0.0
+    t1 = 0.0
+    length = len(mileages)
+    for i in range(i):
+        tmp0 = sumTheta0(t0, t1, mileages, prices, length) / length
+        tmp1 = sumTheta1(t0, t1, mileages, prices, length) / length
+
+        t0 -= (learning_rate * tmp0)
+        t1 -= (learning_rate * tmp1)
 
     return t0, t1
 
@@ -38,16 +45,18 @@ for shit in data_frame.iterrows():
     except:
         exit(1)
 
-t0 = 0
-t1 = 0
-
-t0, t1 = trainer(mileages, prices, t0, t1)
-print(estimator(t0, t1, 74000))
-t0, t1 = trainer(mileages, prices, t0, t1)
-print(estimator(t0, t1, 74000))
-t0, t1 = trainer(mileages, prices, t0, t1)
-print(estimator(t0, t1, 74000))
-t0, t1 = trainer(mileages, prices, t0, t1)
-print(estimator(t0, t1, 74000))
+t0 = 0.0
+t1 = 0.0
+for i in range(10):
+    t0, t1 = trainer(mileages, prices, i)
+    print(str(i + 1) + ' times : t0 = ' + str(t0) + '\n          t1 = ' + str(t1) + '\n----------')
+#t0, t1 = trainer(mileages, prices, t0, t1)
+#print(estimator(t0, t1, 74000))
+#t0, t1 = trainer(mileages, prices, t0, t1)
+#print(estimator(t0, t1, 74000))
+#t0, t1 = trainer(mileages, prices, t0, t1)
+#print(estimator(t0, t1, 74000))
+#t0, t1 = trainer(mileages, prices, t0, t1)
+#print(estimator(t0, t1, 74000))
 
 # lets try ?
